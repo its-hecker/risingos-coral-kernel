@@ -1,0 +1,31 @@
+name: Repair ignored files in InfinityX coral kernel import
+on:
+  push:
+    paths:
+      - .github/workflows/repair-import.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  repair:
+    if: github.repository == 'its-hecker/risingos-coral-kernel'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout RisingOS kernel
+        uses: actions/checkout@v4
+      - name: Restore all tracked files, including ignored audio drivers
+        shell: bash
+        run: |
+          set -euo pipefail
+          export GIT_LFS_SKIP_SMUDGE=1
+          git clone --single-branch --depth 1 --branch cnb-Latest-stable https://github.com/its-hecker/infinity_cnb_kernel_google_msm-4.14.git /tmp/infinity-source
+          rsync -a --delete --exclude='/.git/' --exclude='/.github/' /tmp/infinity-source/ ./
+          git add --force --all
+          git update-index --add --cacheinfo 160000,ce120bd9f4ed262302d4776589a940412949d365,KernelSU
+          git config user.name Hecker
+          git config user.email 118846180+its-hecker@users.noreply.github.com
+          if ! git diff --cached --quiet; then
+            git commit -m 'rising: restore complete InfinityX kernel file set'
+            git push origin HEAD:main
+          fi
