@@ -22,7 +22,7 @@ jobs:
           set -euo pipefail
           export GIT_LFS_SKIP_SMUDGE=1
           git clone --single-branch --depth 1 --branch cnb-Latest-stable https://github.com/its-hecker/infinity_cnb_kernel_google_msm-4.14.git /tmp/infinity-source
-          rsync -a --delete --exclude='/.git/' --exclude='/.github/workflows/import-infinity.yml' /tmp/infinity-source/ ./
+          rsync -a --delete --exclude='/.git/' --exclude='/.github/' /tmp/infinity-source/ ./
           git config user.name Hecker
           git config user.email 118846180+its-hecker@users.noreply.github.com
           git add -A
